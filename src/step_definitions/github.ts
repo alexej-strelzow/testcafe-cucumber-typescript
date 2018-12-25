@@ -19,5 +19,6 @@ Then(/^I am pressing (.*) key on GitHub$/, async (text) => {
 });
 
 Then(/^I should see that the first GitHub's result is (.*)$/, async (text) => {
+  // FAILS on PURPOSE -> so you can see the screenshot in the report
   expect(githubPage.firstSearchResult().innerText).to.contain(text);
 });

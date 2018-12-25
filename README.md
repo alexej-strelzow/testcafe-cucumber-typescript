@@ -5,13 +5,13 @@ Welcome to this working example of TestCafe + Cucumber + TypeScript.
 # Features
 
 This project gives you the following features:
-- specify tests with Gherkin
+- specify tests with Gherkin (if using IntelliJ or WebStorm, please install the CucumberJs Plugin!)
 - run tests with Cucumber
 - write tests with TypeScript
 - written tests work with TestCafe and Cucumber (own lean selector $)
-- automatic screenshot generation on fail (+ appending to report)
-- testcafe reporting (json, html)
-- cucumber reporting (json, html, junit)
+- take screenshot on fail (+ append to report)
+- TestCafe reporting (json, html)
+- Cucumber reporting (json, html, junit)
 
 When writing tests with Cucumber I chose to use chai as the assertion library.
 In that case failing scenarios will not affect following scenarios (in contrary to the testcafe assertions).

@@ -1,7 +1,7 @@
 {
   "name": "testcafe-cucumber-typescript",
   "version": "0.0.1",
-  "description": "Bridges Testcafe and Cucumberjs with TypeScript",
+  "description": "Integration of TestCafe, Cucumberjs and TypeScript",
   "author": "Alexej Strelzow",
   "license": "MIT",
   "scripts": {
@@ -38,7 +38,6 @@
     "@types/node": "~10.0.0",
     "base64-img": "~1.0.4",
     "chai": "~4.2.0",
-    "codelyzer": "~4.3.0",
     "cucumber": "~4.2.1",
     "cucumber-html-reporter": "~4.0.4",
     "cucumber-junit-convert": "^1.0.2",

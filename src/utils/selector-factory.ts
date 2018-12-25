@@ -2,7 +2,7 @@
 
 import { Selector } from 'testcafe';
 import { TestControllerListener } from '../support/test-controller-listener';
-import testControllerHolder from '../support/test-controller-holder';
+import { testControllerHolder } from '../support/test-controller-holder';
 
 class TestControllerListenerImpl implements TestControllerListener {
   public async onTestControllerSet(tc: TestController) {
@@ -20,7 +20,7 @@ class TestControllerListenerImpl implements TestControllerListener {
  * </pre>
  */
 class SelectorFactory {
-  private static t: TestController;
+  private static t: TestController | undefined;
 
   public static init(): void {
     testControllerHolder.register(new TestControllerListenerImpl());
@@ -33,7 +33,7 @@ class SelectorFactory {
   }
 
   public static destroy(): void {
-    SelectorFactory.t = null;
+    SelectorFactory.t = undefined;
   }
 
   /**

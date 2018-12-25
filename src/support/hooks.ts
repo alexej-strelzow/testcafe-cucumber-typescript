@@ -3,13 +3,14 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 
 import { BeforeAll, After, AfterAll, Status } from 'cucumber';
-import testControllerHolder from './test-controller-holder';
+import { testControllerHolder } from './test-controller-holder';
 import { SelectorFactoryInitializer } from '../utils/selector-factory';
 import {
   BROWSER,
   GENERATE_CUCUMBER_HTML_REPORT,
   GENERATE_CUCUMBER_JUNIT_REPORT,
 } from '../environment';
+import { TestControllerConfig } from './test-controller-config';
 
 // tslint:disable-next-line
 const createTestCafe = require('testcafe');
@@ -25,7 +26,7 @@ const DELAY = 5 * 1000;
 function createTestFile() {
   fs.writeFileSync(
     TEST_FILE,
-    `import testControllerHolder from "./src/support/test-controller-holder";
+    `import { testControllerHolder } from "./src/support/test-controller-holder";
       fixture("fixture")
       test("test", testControllerHolder.capture)`
   );
@@ -62,9 +63,12 @@ function createServerAndRunTests() {
  * Creates the dummy test file and captures the TestController.
  */
 BeforeAll((callback) => {
+  testControllerHolder.register(new TestControllerConfig());
   SelectorFactoryInitializer.init();
+
   createTestFile();
   createServerAndRunTests();
+
   setTimeout(callback, DELAY);
 });
 
@@ -111,13 +115,13 @@ const generateJunitReport = () => {
  *     - execute dummy test ('fixture') and capture TestController
  * 1. Execute feature 1 -> feature n (After)
  * 2. After All
- *     - cleanup (free TestController, delete dummy test file)
+ *     - cleanup (destroy TestController, delete dummy test file)
  *     - generate html report
  *     - exit process
  */
 AfterAll((callback) => {
   SelectorFactoryInitializer.destroy();
-  testControllerHolder.free();
+  testControllerHolder.destroy();
 
   fs.unlinkSync(TEST_FILE);
 

@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true,
+    "strict": false,
     "outDir": "./lib",
     "declaration": true,
     "declarationDir": "./lib",

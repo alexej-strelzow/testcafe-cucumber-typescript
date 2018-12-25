@@ -1,5 +1,5 @@
 import * as base64Img from 'base64-img';
-import testControllerHolder from './test-controller-holder';
+import { testControllerHolder } from './test-controller-holder';
 import { setDefaultTimeout, setWorldConstructor } from 'cucumber';
 
 const DEFAULT_TIMEOUT = 30 * 1000;
@@ -10,14 +10,6 @@ function CustomWorld({ attach }) {
    * this function is crucial for the Given-Part of each feature as it provides the TestController
    */
   this.waitForTestController = testControllerHolder.get;
-
-  /**
-   * Configure TestController
-   */
-  testControllerHolder
-    .get()
-    .then((tc: TestController) => tc.maximizeWindow())
-    .catch((error) => console.warn('TestController could not be captured', error));
 
   /**
    * function that attaches the attachment (e.g. screenshot) to the report
