@@ -7,15 +7,23 @@ import { testControllerHolder } from './test-controller-holder';
 import { SelectorFactoryInitializer } from '../utils/selector-factory';
 import {
   BROWSER,
+  BROWSER_FLAGS,
   GENERATE_CUCUMBER_HTML_REPORT,
   GENERATE_CUCUMBER_JUNIT_REPORT,
+  RECORD_FAILED_ONLY,
+  RECORD_SINGLE_FILE,
+  RECORD_VIDEO,
+  TEST_FAIL_FILE,
+  VIDEO_DIR,
 } from '../environment';
 import { TestControllerConfig } from './test-controller-config';
 
 // tslint:disable-next-line
 const createTestCafe = require('testcafe');
+import * as screenshot from 'screenshot-desktop';
 
 let testcafe;
+let atLeastOneScenarioFailed = false;
 const TEST_FILE = 'test.js';
 const DELAY = 5 * 1000;
 
@@ -39,19 +47,27 @@ function createTestFile() {
 function createServerAndRunTests() {
   let runner;
 
-  createTestCafe('localhost', 1337, 1338)
+  createTestCafe('localhost')
     .then((tc: any) => {
       testcafe = tc;
       runner = tc.createRunner();
 
-      return runner
+      runner = runner
         .src(`./${TEST_FILE}`)
         .screenshots('reports/screenshots/', false) // we create screenshots manually!
-        .browsers(BROWSER)
-        .run()
-        .catch((error: any) => {
-          console.log('Runner error count was: ', error);
+        .browsers(`${BROWSER} ${BROWSER_FLAGS}`.trim());
+
+      if (RECORD_VIDEO) {
+        runner = runner.video(VIDEO_DIR, {
+          singleFile: RECORD_SINGLE_FILE,
+          failedOnly: RECORD_FAILED_ONLY,
+          pathPattern: '${TEST_INDEX}/${USERAGENT}/${FILE_INDEX}.mp4',
         });
+      }
+
+      return runner.run().catch((error: any) => {
+        console.log('Runner error count was: ', error);
+      });
     })
     .then((report: any) => {
       console.log('Report data was: ', report);
@@ -62,7 +78,7 @@ function createServerAndRunTests() {
  * Runs before all tests start executing.
  * Creates the dummy test file and captures the TestController.
  */
-BeforeAll((callback) => {
+BeforeAll((callback: any) => {
   testControllerHolder.register(new TestControllerConfig());
   SelectorFactoryInitializer.init();
 
@@ -82,10 +98,24 @@ After(async function(testCase) {
   const t: TestController = await world.waitForTestController();
 
   if (testCase.result.status === Status.FAILED) {
-    await t.takeScreenshot().then((path) => {
-      console.log('screenshot taken, see: ', path);
-      return world.attachScreenshotToReport(path);
-    });
+    atLeastOneScenarioFailed = true;
+
+    await t
+      .takeScreenshot()
+      .then((path) => {
+        console.log('screenshot taken, see: ', path);
+        return world.attachScreenshotToReport(path);
+      })
+      .catch(async (e) => {
+        // Workaround for https://github.com/DevExpress/testcafe/issues/4231
+        console.log(
+          'encountered an error during taking screenshot, retry using another library...'
+        );
+        await screenshot({ format: 'png' }).then((image) => {
+          console.log('screenshot taken!');
+          return world.attachScreenshotInPngFormatToReport(image);
+        });
+      });
   }
 });
 
@@ -110,6 +140,14 @@ const generateJunitReport = () => {
 };
 
 /**
+ * The purpose of this file is to notify the ci-build-server that at least one test/scenario failed.
+ * The ci-build-server must then let the build fail (not pass).
+ */
+function createTestFailFile() {
+  fs.writeFileSync(`e2e/reports/${TEST_FAIL_FILE}`, ``);
+}
+
+/**
  * Runs after all tests finished executing, that is:
  * 0. BeforeAll
  *     - execute dummy test ('fixture') and capture TestController
@@ -119,7 +157,7 @@ const generateJunitReport = () => {
  *     - generate html report
  *     - exit process
  */
-AfterAll((callback) => {
+AfterAll((callback: any) => {
   SelectorFactoryInitializer.destroy();
   testControllerHolder.destroy();
 
@@ -129,6 +167,10 @@ AfterAll((callback) => {
   setTimeout(() => {
     generateHtmlReport();
     generateJunitReport();
+    if (atLeastOneScenarioFailed && TEST_FAIL_FILE) {
+      createTestFailFile();
+    }
+
     return p.exit();
   }, DELAY * 2);
 });

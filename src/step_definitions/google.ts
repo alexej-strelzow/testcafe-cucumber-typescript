@@ -21,5 +21,5 @@ Then(/^I should see that the first Google's result is "(.*)"$/, async (text) => 
   const firstLink = $('#rso').find('a');
   const found = await firstLink.innerText;
 
-  expect(found).to.match(new RegExp(text));
+  expect(found).to.include(text);
 });

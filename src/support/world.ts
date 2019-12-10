@@ -1,10 +1,14 @@
 import * as base64Img from 'base64-img';
 import { testControllerHolder } from './test-controller-holder';
 import { setDefaultTimeout, setWorldConstructor } from 'cucumber';
+import * as chai from 'chai';
+import * as chaiString from 'chai-string';
+chai.use(chaiString);
 
 const DEFAULT_TIMEOUT = 30 * 1000;
 
-function CustomWorld({ attach }) {
+// define this as any here to work around: 'this' implicitly has type 'any' because it does not have a type annotation.
+function CustomWorld(this: any, { attach }) {
   this.worldName = 'Cucumber World';
   /**
    * this function is crucial for the Given-Part of each feature as it provides the TestController
@@ -46,8 +50,7 @@ function CustomWorld({ attach }) {
   this.addScreenshotToReport = async function() {
     if (this.canGenerateReport()) {
       const tc = await this.waitForTestController();
-      tc
-        .takeScreenshot()
+      tc.takeScreenshot()
         .then((path) => this.attachScreenshotToReport(path))
         .catch((error) => console.warn('The screenshot was not attached to the report', error));
     } else {
@@ -63,6 +66,14 @@ function CustomWorld({ attach }) {
     const imgInBase64 = base64Img.base64Sync(pathToScreenshot);
     const imageConvertForCuc = imgInBase64.substring(imgInBase64.indexOf(',') + 1);
     return attach(imageConvertForCuc, 'image/png');
+  };
+
+  /**
+   * Adds the screenshot to the json report
+   * @param pngImage the image in png format
+   */
+  this.attachScreenshotInPngFormatToReport = (pngImage: any) => {
+    return attach(pngImage, 'image/png');
   };
 }
 

@@ -18,7 +18,7 @@ const options = {
 
 reporter.generate(options);
 
-//more info on `metadata` is available in `options` section below.
+// more info on `metadata` is available in `options` section below.
 
-//to generate consolidated report from multi-cucumber JSON files, please use `jsonDir` option instead of `jsonFile`.
+// to generate consolidated report from multi-cucumber JSON files, please use `jsonDir` option instead of `jsonFile`.
 // More info: https://www.npmjs.com/package/cucumber-html-reporter

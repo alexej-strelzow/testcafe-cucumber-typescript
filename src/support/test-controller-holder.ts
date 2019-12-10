@@ -28,7 +28,9 @@ class TestControllerHolderImpl implements TestControllerHolder {
   public capture(t: TestController): Promise<any> {
     TestControllerHolderImpl.testController = t;
 
-    TestControllerHolderImpl.testControllerListener.forEach((l) => l.onTestControllerSet(t));
+    if (TestControllerHolderImpl.testControllerListener) {
+      TestControllerHolderImpl.testControllerListener.forEach((l) => l.onTestControllerSet(t));
+    }
 
     if (TestControllerHolderImpl.getResolver) {
       TestControllerHolderImpl.getResolver(t);
@@ -38,7 +40,7 @@ class TestControllerHolderImpl implements TestControllerHolder {
   }
 
   public register(testControllerListener: TestControllerListener): void {
-    if (testControllerListener) {
+    if (testControllerListener && TestControllerHolderImpl.testControllerListener) {
       TestControllerHolderImpl.testControllerListener.push(testControllerListener);
     }
   }

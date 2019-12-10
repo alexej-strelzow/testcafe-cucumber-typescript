@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "strict": false,
+    "strict": true,
     "outDir": "./lib",
     "declaration": true,
     "declarationDir": "./lib",
@@ -14,7 +14,8 @@
     "types": [
       "cucumber",
       "node",
-      "testcafe"
+      "testcafe",
+      "chai-string"
     ],
     "lib" : ["dom", "es2017"]
   }
