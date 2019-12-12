@@ -1,5 +1,7 @@
 .idea
 node_modules
 
-!reports/
-reports/*
+# E2E Test Reports
+/reports/*
+# exception to the rule
+!/reports/.gitkeep
