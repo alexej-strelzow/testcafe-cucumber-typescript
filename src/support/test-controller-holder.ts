@@ -11,8 +11,8 @@ class TestControllerHolderImpl implements TestControllerHolder {
   private static instance: TestControllerHolder;
 
   // TODO: intended not to be static
-  private static testController: TestController | undefined = undefined;
-  private static testControllerListener: TestControllerListener[] | undefined = [];
+  private static testController?: TestController;
+  private static testControllerListener: TestControllerListener[] = [];
   private static captureResolver: any;
   private static getResolver: any;
 
@@ -28,20 +28,18 @@ class TestControllerHolderImpl implements TestControllerHolder {
   public capture(t: TestController): Promise<any> {
     TestControllerHolderImpl.testController = t;
 
-    if (TestControllerHolderImpl.testControllerListener) {
-      TestControllerHolderImpl.testControllerListener.forEach((l) => l.onTestControllerSet(t));
-    }
+    TestControllerHolderImpl?.testControllerListener.forEach(l => l.onTestControllerSet(t));
 
     if (TestControllerHolderImpl.getResolver) {
       TestControllerHolderImpl.getResolver(t);
     }
 
-    return new Promise((resolve) => (TestControllerHolderImpl.captureResolver = resolve));
+    return new Promise(resolve => (TestControllerHolderImpl.captureResolver = resolve));
   }
 
   public register(testControllerListener: TestControllerListener): void {
-    if (testControllerListener && TestControllerHolderImpl.testControllerListener) {
-      TestControllerHolderImpl.testControllerListener.push(testControllerListener);
+    if (testControllerListener) {
+      TestControllerHolderImpl?.testControllerListener.push(testControllerListener);
     }
   }
 
@@ -54,7 +52,7 @@ class TestControllerHolderImpl implements TestControllerHolder {
   }
 
   public get(): Promise<TestController> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if (TestControllerHolderImpl.testController) {
         // already captured
         resolve(TestControllerHolderImpl.testController);

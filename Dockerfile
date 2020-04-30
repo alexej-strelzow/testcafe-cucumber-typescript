@@ -1,37 +1,48 @@
-FROM node:12-stretch
+###
+# A simple Dockerfile which runs the E2E tests inside the container and generates a report.
+# This base image contains git, just in case you want to clone an application inside this container
+# and execute E2E tests against it (use `npm run tests:internal` for that, as it uses the wait-on lib).
+###
 
-# Install basic software
-RUN apt-get update \
-    && apt-get install -y wget
+FROM alpine:3.11.2
+# Install bash
+RUN apk update && apk add --no-cache bash
 
-# Set the Chrome repo
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
+# Install git
+RUN apk add --no-cache git
+RUN git --version
 
-# Install Chrome
-RUN apt-get update && apt-get -y install google-chrome-stable
-RUN google-chrome --version
+# Install node and npm
+RUN apk add nodejs
+RUN apk add npm
+RUN node --version
+RUN npm --version
 
-# set working directory
-RUN mkdir /usr/src/app
+## Install browser + tools
+RUN apk add chromium
+RUN apk add lsof
+RUN apk add curl
+
+### Set working directory
+RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
-# add `/usr/src/app/node_modules/.bin` to $PATH
-ENV PATH /usr/src/app/node_modules/.bin:$PATH
+### BASE IMAGE END ###
+# Below instructios can also be done in e.g. Gitlab CI/CD (.gitlab-ci.yml) by using the image above as base-image.
+# You would simply configure the e2e project (see ENV below) and execute the tests via `npm run e2e`, plus
+# handle the abort condition also inside your .gitlab-ci.yml file.
+###
 
-# install and cache app dependencies
-COPY package.json /usr/src/app/package.json
-RUN npm i
-RUN npm i -g testcafe@1.7.0
-
-# add app
+# copy app and install dependencies
 COPY . /usr/src/app
+RUN npm i
 
-# run E2E tests
-# ***Note***: chrome:headless has known bug regarding downloading artifacts (https://bugs.chromium.org/p/chromium/issues/detail?id=696481)
-ENV BROWSER chrome:headless
-ENV BROWSER_FLAGS --no-sandbox
+# configure project
+ENV BROWSER chromium
+ENV BROWSER_FLAGS ":headless --no-sandbox"
+# below file will tell the CI/CD pipeline that at least 1 test failed (abort condition)
 ENV TEST_FAIL_FILE=fail.txt
 
+# run E2E tests
 RUN chmod a+x /usr/src/app/e2e-testing.sh
 RUN /usr/src/app/e2e-testing.sh

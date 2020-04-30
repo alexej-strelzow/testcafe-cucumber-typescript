@@ -1,8 +1,8 @@
 #!/bin/bash
 
-npm run test
+npm run tests
 
-#ls -lah /usr/src/app/e2e/reports/
+#ls -lah /usr/src/app/reports/
 
 if [ -e "/usr/src/app/reports/${TEST_FAIL_FILE}" ]; then
     echo "One or more E2E-Tests failed!"

@@ -1,35 +1,26 @@
-import * as base64Img from 'base64-img';
+import { base64Sync } from 'base64-img';
 import { testControllerHolder } from './test-controller-holder';
-import { setDefaultTimeout, setWorldConstructor } from 'cucumber';
+import { setDefaultTimeout, setWorldConstructor, World } from 'cucumber';
 import * as chai from 'chai';
 import * as chaiString from 'chai-string';
+import { isLiveModeOn } from './helper';
+const screenshot = require('screenshot-desktop');
+
 chai.use(chaiString);
 
-const DEFAULT_TIMEOUT = 30 * 1000;
+const DEFAULT_TIMEOUT = isLiveModeOn() ? 60 * 60 * 1000 : 30 * 1000;
 
-// define this as any here to work around: 'this' implicitly has type 'any' because it does not have a type annotation.
-function CustomWorld(this: any, { attach }) {
-  this.worldName = 'Cucumber World';
+function CustomWorld(this: World, { attach }) {
+  this.worldName = 'Your E2E World';
   /**
    * this function is crucial for the Given-Part of each feature as it provides the TestController
    */
-  this.waitForTestController = testControllerHolder.get;
+  this.getTestController = testControllerHolder.get;
 
   /**
    * function that attaches the attachment (e.g. screenshot) to the report
    */
   this.attach = attach;
-
-  /**
-   * Report generation only permitted if one of the following options is set
-   */
-  this.canGenerateReport = (): boolean => {
-    return (
-      process.argv.includes('--format') ||
-      process.argv.includes('-f') ||
-      process.argv.includes('--format-options')
-    );
-  };
 
   /**
    * Adds embeddings to the "After"-step (see report.json):
@@ -39,23 +30,19 @@ function CustomWorld(this: any, { attach }) {
    *     "mime_type": "image/png"
    *   }
    * ]
-   *
-   * Usage (function scope!):
-   * <pre>
-   * Then(/^I capture the screen$/, async function() {
-   *   await this.addScreenshotToReport();
-   * }
-   * </pre>
    */
-  this.addScreenshotToReport = async function() {
-    if (this.canGenerateReport()) {
-      const tc = await this.waitForTestController();
-      tc.takeScreenshot()
-        .then((path) => this.attachScreenshotToReport(path))
-        .catch((error) => console.warn('The screenshot was not attached to the report', error));
-    } else {
-      return new Promise((resolve) => resolve(null));
-    }
+  this.addScreenshotToReport = async function () {
+    await (await this.getTestController())
+      .takeScreenshot()
+      .then(this.attachScreenshotToReport)
+      .catch(async error => {
+        // Workaround for https://github.com/DevExpress/testcafe/issues/4231
+        console.log('encountered an error during taking screenshot, retry using another library...', error);
+        await screenshot({ format: 'png' }).then(image => {
+          console.log('screenshot taken!');
+          return this.attachScreenshotInPngFormatToReport(image);
+        });
+      });
   };
 
   /**
@@ -63,7 +50,7 @@ function CustomWorld(this: any, { attach }) {
    * @param pathToScreenshot The path under which the screenshot has been saved
    */
   this.attachScreenshotToReport = (pathToScreenshot: string) => {
-    const imgInBase64 = base64Img.base64Sync(pathToScreenshot);
+    const imgInBase64 = base64Sync(pathToScreenshot);
     const imageConvertForCuc = imgInBase64.substring(imgInBase64.indexOf(',') + 1);
     return attach(imageConvertForCuc, 'image/png');
   };

@@ -1,0 +1,11 @@
+{
+  "watch": [
+    "src/**/*.ts",
+    "src/**/*.feature"
+  ],
+  "ext": "ts feature",
+  "ignore": [
+    "src/**/*.spec.ts"
+  ],
+  "exec": "npm run tests"
+}

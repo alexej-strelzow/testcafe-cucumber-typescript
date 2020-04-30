@@ -1,60 +1,85 @@
 {
   "name": "testcafe-cucumber-typescript",
-  "version": "0.0.1",
-  "description": "Integration of TestCafe, Cucumberjs and TypeScript",
+  "version": "1.0.0",
+  "description": "Integration of TestCafe, Cucumber.js and TypeScript",
   "author": "Alexej Strelzow",
   "license": "MIT",
+  "repository": {
+    "url": "git@github.com:alexej-strelzow/testcafe-cucumber-typescript.git"
+  },
   "scripts": {
     "UNIX:": "################# BELOW ARE THE LINUX & OSX COMMANDS #################",
-    "lint": "./node_modules/tslint/bin/tslint -c ./tslint.json --project ./tsconfig.json",
-    "lint-fix": "npm run lint -- --fix",
-    "format": "./node_modules/.bin/prettier --single-quote --write './**/*.ts'",
-    "style": "npm run format && npm run lint-fix",
-    "test": "TS_NODE_PROJECT='./tsconfig.json' ./node_modules/cucumber/bin/cucumber-js src/features --require-module ts-node/register --require 'src/**/*.ts' -f json:./reports/cucumber_report.json",
+    "tests": "./node_modules/.bin/cucumber-js -p cucumber",
+    "tests:internal": "wait-on tcp:4200 && npm run tests",
+    "tests:wip": "TAGS=@wip npm run tests",
+    "######## LIVE MODE ########": "",
+    "tests:live": "LIVE_MODE=on nodemon --config nodemon.json",
+    "tests:live:wip": "TAGS=@wip npm run tests:live",
+    "######## LINTING & FORMATING ########": "",
+    "lint": "node_modules/.bin/tslint -p . --format codeFrame --fix",
+    "format": "node_modules/.bin/prettier 'src/**/*.{ts,json,scss,html}' --write",
+    "style": "npm run format && npm run lint",
+    "_______": "########################################################################",
     "WINDOWS": "################# BELOW ARE THE WINDOWS (WIN) COMMANDS #################",
-    "lint:win": "tslint.cmd -c tslint.json --project tsconfig.json",
-    "lint-fix:win": "npm run lint:win -- --fix",
-    "format:win": "prettier.cmd --single-quote --write ./**/*.ts",
-    "style:win": "npm run format:win && npm run lint-fix:win",
-    "test:win": "cucumber-js.cmd src/features --require-module ts-node/register --require src/**/*.ts -f json:reports/cucumber_report.json"
+    "-------": "########################################################################",
+    "tests:win": "cucumber-js.cmd -p cucumber",
+    "tests:internal:win": "wait-on tcp:4200 && npm run tests:win",
+    "tests:wip:win": "TAGS=@wip npm run tests:win",
+    "######## LIVE MODE (WIN) ########": "",
+    "tests:live:win": "LIVE_MODE=on nodemon --config nodemon.windows.json",
+    "tests:live:wip:win": "TAGS=@wip npm run tests:live:win",
+    "######## LINTING & FORMATING (WIN) ########": "",
+    "lint:win": "tslint.cmd -p . --format codeFrame --fix",
+    "format:win": "prettier.cmd 'src/**/*.{ts,json,scss,html}' --write",
+    "style:win": "npm run format:win && npm run lint:win"
   },
+  "private": true,
   "husky": {
     "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
       "pre-commit": "lint-staged"
     }
   },
   "lint-staged": {
-    "*.ts": [
+    "src/**/*.ts": [
       "tslint --format codeFrame --fix",
       "git add"
     ],
-    "{src,e2e}/**/*.{js,ts,scss}": [
-      "npm run format",
+    "src/**/*.{js,ts}": [
+      "node_modules/.bin/prettier --write",
       "git add"
     ]
   },
   "devDependencies": {
-    "@types/chai": "~4.2.2",
+    "@commitlint/cli": "~8.1.0",
+    "@commitlint/config-conventional": "~8.1.0",
+    "@commitlint/parse": "~8.1.0",
+    "@types/chai": "~4.2.11",
     "@types/chai-string": "~1.4.2",
-    "@types/cucumber": "~6.0.0",
+    "@types/cucumber": "~6.0.1",
     "@types/node": "~10.14.17",
+    "@types/node-fetch": "~2.5.6",
     "base64-img": "~1.0.4",
     "chai": "~4.2.0",
     "chai-string": "~1.5.0",
     "cucumber": "~6.0.5",
-    "cucumber-html-reporter": "~5.0.2",
+    "cucumber-html-reporter": "~5.2.0",
     "cucumber-junit": "~1.7.1",
     "cucumber-junit-convert": "~1.1.0",
     "husky": "~3.0.9",
-    "lint-staged": "~9.5.0",
-    "prettier": "~1.19.1",
-    "screenshot-desktop": "~1.10.0",
-    "testcafe": "~1.7.0",
-    "testcafe-reporter-html": "~1.4.5",
-    "ts-node": "~8.5.4",
-    "tslint": "~5.20.0",
+    "lint-staged": "~9.2.5",
+    "node-fetch": "~2.6.0",
+    "nodemon": "^2.0.3",
+    "prettier": "~2.0.2",
+    "screenshot-desktop": "~1.9.0",
+    "testcafe": "1.8.3",
+    "ts-node": "~8.3.0",
+    "tslib": "~1.11.1",
+    "tslint": "~6.1.1",
     "tslint-config-prettier": "~1.18.0",
     "tslint-config-standard": "~9.0.0",
-    "typescript": "~3.5.3"
+    "tslint-sonarts": "~1.9.0",
+    "typescript": "~3.8.3",
+    "wait-on": "~3.3.0"
   }
 }

@@ -1,22 +1,27 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "strict": true,
-    "outDir": "./lib",
     "declaration": true,
     "declarationDir": "./lib",
-    "sourceMap": true,
-    "noImplicitAny": false,
-    "noResolve": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "inlineSourceMap": true,
     "module": "commonjs",
     "moduleResolution": "node",
+    "noImplicitAny": false,
+    "noResolve": false,
+    "outDir": "./lib",
+    "pretty": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "strict": true,
     "target": "es2015",
     "types": [
       "cucumber",
       "node",
-      "testcafe",
+      "testcafe/ts-defs",
       "chai-string"
     ],
-    "lib" : ["dom", "es2017"]
+    "lib" : ["dom", "es2018"]
   }
 }

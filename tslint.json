@@ -1,24 +1,33 @@
 {
   "extends": [
     "tslint:recommended",
-    "tslint-config-standard",
-    "tslint-config-prettier"
+    "tslint-config-prettier",
+    "tslint-sonarts"
   ],
+  "linterOptions": {
+    "exclude": [
+      "**/*.spec.ts",
+      "lib/"
+    ]
+  },
   "rules": {
-    "arrow-return-shorthand": true,
-    "callable-types": true,
-    "class-name": true,
-    "comment-format": [
-      true,
-      "check-space"
-    ],
-    "curly": true,
+    "array-type": false,
+    "arrow-parens": false,
     "deprecation": {
       "severity": "warn"
     },
-    "forin": true,
-    "interface-over-type-literal": true,
-    "interface-name": [true, "never-prefix"],
+    "import-blacklist": [
+      true,
+      "rxjs/Rx"
+    ],
+    "interface-name": false,
+    "only-arrow-functions": false,
+    "max-classes-per-file": false,
+    "max-line-length": [
+      true,
+      140
+    ],
+    "max-union-size": false,
     "member-access": false,
     "member-ordering": [
       true,
@@ -31,8 +40,7 @@
         ]
       }
     ],
-    "no-arg": true,
-    "no-bitwise": true,
+    "no-consecutive-blank-lines": false,
     "no-console": [
       true,
       "debug",
@@ -41,35 +49,26 @@
       "timeEnd",
       "trace"
     ],
-    "no-construct": true,
-    "no-debugger": true,
-    "no-duplicate-super": true,
     "no-empty": false,
-    "no-empty-interface": false,
-    "no-eval": true,
     "no-inferrable-types": [
       true,
       "ignore-params"
     ],
-    "no-misused-new": true,
-    "no-non-null-assertion": true,
+    "no-non-null-assertion": false,
     "no-redundant-jsdoc": true,
-    "no-shadowed-variable": true,
-    "no-string-literal": false,
-    "no-string-throw": true,
     "no-switch-case-fall-through": true,
-    "no-unnecessary-initializer": true,
-    "no-unused-expression": true,
-    "no-var-keyword": true,
+    "no-var-requires": false,
+    "object-literal-key-quotes": [
+      true,
+      "as-needed"
+    ],
     "object-literal-sort-keys": false,
     "ordered-imports": false,
-    "prefer-const": true,
-    "radix": true,
-    "triple-equals": [
+    "quotemark": [
       true,
-      "allow-null-check"
+      "single"
     ],
-    "unified-signatures": true,
+    "trailing-comma": false,
     "variable-name": false
   }
 }

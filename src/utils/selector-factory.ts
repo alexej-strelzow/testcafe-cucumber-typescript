@@ -1,4 +1,4 @@
-// tslint:disable
+// tslint:disable:max-classes-per-file
 
 import { Selector } from 'testcafe';
 import { TestControllerListener } from '../support/test-controller-listener';
@@ -20,7 +20,7 @@ class TestControllerListenerImpl implements TestControllerListener {
  * </pre>
  */
 class SelectorFactory {
-  private static t: TestController | undefined;
+  private static t?: TestController;
 
   public static init(): void {
     testControllerHolder.register(new TestControllerListenerImpl());
@@ -44,12 +44,7 @@ class SelectorFactory {
    * @param options See Selector
    */
   public static of(
-    init:
-      | string
-      | ((...args: any[]) => Node | Node[] | NodeList | HTMLCollection)
-      | Selector
-      | NodeSnapshot
-      | SelectorPromise,
+    init: string | ((...args: any[]) => Node | Node[] | NodeList | HTMLCollection) | Selector | NodeSnapshot | SelectorPromise,
     options?: SelectorOptions
   ): Selector {
     const selector = Selector(init, options);
@@ -89,13 +84,12 @@ export class SelectorFactoryInitializer {
  * @param options See Selector
  */
 export function $(
-  init:
-    | string
-    | ((...args: any[]) => Node | Node[] | NodeList | HTMLCollection)
-    | Selector
-    | NodeSnapshot
-    | SelectorPromise,
+  init: string | ((...args: any[]) => Node | Node[] | NodeList | HTMLCollection) | Selector | NodeSnapshot | SelectorPromise,
   options?: SelectorOptions
 ): Selector {
   return SelectorFactory.of(init, options);
+}
+
+export function selectByTestId(value: string): Selector {
+  return $(`*[data-testid="${value}"]`);
 }
