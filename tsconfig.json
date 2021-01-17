@@ -17,7 +17,6 @@
     "strict": true,
     "target": "es2015",
     "types": [
-      "cucumber",
       "node",
       "testcafe/ts-defs",
       "chai-string"

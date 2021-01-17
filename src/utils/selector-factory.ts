@@ -1,29 +1,23 @@
-// tslint:disable:max-classes-per-file
-
 import { Selector } from 'testcafe';
 import { TestControllerListener } from '../support/test-controller-listener';
 import { testControllerHolder } from '../support/test-controller-holder';
-
-class TestControllerListenerImpl implements TestControllerListener {
-  public async onTestControllerSet(tc: TestController) {
-    SelectorFactory.setTestController(tc);
-  }
-}
 
 /**
  * Internal factory that creates an extended Selector when running with Cucumber.
  * Holds an instance of TestCafes' TestController to be able to write short (synchronous) selectors.
  * <pre>
- *   $('a.fancy-button').count // synchronous way - requires instance of TestController
- *            vs
- *   (await $('a.fancy-button')).count // asynchronous way - using {@link testControllerHolder#get} internally
+ * $('a.fancy-button').count // synchronous way - requires instance of TestController
+ * vs
+ * (await $('a.fancy-button')).count // asynchronous way - using {@link testControllerHolder#get} internally
  * </pre>
  */
 class SelectorFactory {
   private static t?: TestController;
 
   public static init(): void {
-    testControllerHolder.register(new TestControllerListenerImpl());
+    const onTestControllerSet = (tc: TestController): void => SelectorFactory.setTestController(tc);
+    const listener = (): TestControllerListener => ({ onTestControllerSet });
+    testControllerHolder.register(listener);
   }
 
   public static setTestController(t: TestController): void {

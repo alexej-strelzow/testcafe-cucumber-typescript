@@ -12,5 +12,5 @@ When(/^I press on "(.*)"$/, async function (this: Ctx, text: string) {
 });
 
 Then(/^I see a handsome guy$/, async function () {
-  expect(true).to.false;
+  expect(true).to.be.false;
 });

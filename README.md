@@ -4,8 +4,8 @@ Welcome to this working example of TestCafe + Cucumber + TypeScript.
 You can take this project as it is and use it to run your End-to-End (E2E) Tests.
 
 For demo purposes, two feature files are included (see `src/features`):
- - `github.feature`: does NOT pass (configured retry-mechanism will re-run the test twice)
- - `google.feature`: does pass
+ - `alexej.feature`: does NOT pass (configured retry-mechanism will re-run the test twice)
+ - `github.feature`: does pass 
  
 ## Run the project
 
@@ -19,6 +19,11 @@ After the test has finished you will see the following content inside the report
 
 ***Note***:
 The `out` directory contains screenshots, as *.png files, of the page where the error occurred
+
+Click [here](http://cucumber-report.surge.sh/cucumber_report.html) to view the HTML Report.
+
+If you want to publish your report via cucumber-js you can run: `npm run tests:publish`
+and visit the URL that gets printed out after all test finished.
 
 ### CI/CD
 
@@ -36,13 +41,15 @@ This project gives you the following features:
 - Cucumber reporting (json, html, junit)
 - Live Mode (re-run tests on code/feature change)
 - WIP Mode (only execute tests tagged with `@wip` - work in progress; best combine with Live Mode)
+- Skip Scenarios or features via `@skip`-tag
+- Publish Report to `https://reports.cucumber.io/` via `publish`-switch (new since V7)
 
 When writing tests with Cucumber I chose to use chai as the assertion library.
 In that case failing scenarios will not affect following scenarios (in contrary to the TestCafe assertions).
 
 On top you get a nice dev experience with:
 - prettier
-- tslint
+- eslint
 - commit hooks
 
 I hope you enjoy this project.

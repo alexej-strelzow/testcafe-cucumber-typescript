@@ -1,27 +1,27 @@
 import { $ } from '../utils';
 
 export class GithubPage {
-  url() {
+  url(): string {
     return 'https://github.com/';
   }
 
-  searchBox() {
+  searchBox(): Selector {
     return $('.header-search-input');
   }
 
-  firstSearchResult() {
+  firstSearchResult(): Selector {
     return $('.repo-list-item').nth(0);
   }
 
-  loginButton() {
+  loginButton(): Selector {
     return $('.btn.btn-primary.btn-block');
   }
 
-  loginErrorMessage() {
+  loginErrorMessage(): Selector {
     return $('#js-flash-container > div > div');
   }
 
-  searchButton() {
+  searchButton(): Selector {
     return $('.header-search-input');
   }
 }

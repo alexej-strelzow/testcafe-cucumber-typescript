@@ -2,7 +2,7 @@ import { TestControllerListener } from './test-controller-listener';
 
 export interface TestControllerHolder {
   capture(t: TestController): Promise<void>;
-  register(listener: TestControllerListener): void;
+  register(fn: () => TestControllerListener): void;
   destroy(): void;
   get(): Promise<TestController>;
 }
@@ -37,10 +37,8 @@ class TestControllerHolderImpl implements TestControllerHolder {
     return new Promise(resolve => (TestControllerHolderImpl.captureResolver = resolve));
   }
 
-  public register(testControllerListener: TestControllerListener): void {
-    if (testControllerListener) {
-      TestControllerHolderImpl?.testControllerListener.push(testControllerListener);
-    }
+  public register(fn: () => TestControllerListener): void {
+    TestControllerHolderImpl?.testControllerListener.push(fn());
   }
 
   public destroy(): void {

@@ -11,7 +11,7 @@ const common = [
 
 if (process.env.LIVE_MODE !== 'on') {
   common.push('--format json:./reports/cucumber_report.json');
-  common.push('--retry 2');
+  common.push(typeof process.env.SCENARIO_RETRY === 'undefined' ? '--retry 2' :   '--retry ' + process.env.SCENARIO_RETRY);
 }
 
 /**

@@ -9,8 +9,8 @@ const DEFAULT_BROWSER = 'chrome';
 
 /**
  * Path-Information
- *  - home directory
- *  - current working directory
+ * - home directory
+ * - current working directory
  */
 const DEFAULT_HOME = homedir(); // /home/<usr>
 const DEFAULT_CWD = cwd();
@@ -28,6 +28,7 @@ export const BROWSER = process.env.BROWSER || DEFAULT_BROWSER;
 export const BROWSER_FLAGS = process.env.BROWSER_FLAGS || '';
 export const VIDEO_DIR = `${DEFAULT_OUTPUT_DIR}/videos`;
 export const LOCALE = process.env.LOCALE || 'en';
+export const DOWNLOAD_DIR = process.env.DOWNLOAD_DIR || DEFAULT_DOWNLOAD_DIR;
 
 /**
  * Automatically generates the cucumber report

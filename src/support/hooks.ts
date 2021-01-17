@@ -1,5 +1,5 @@
 import { unlinkSync } from 'fs';
-import { After, AfterAll, BeforeAll, Status } from 'cucumber';
+import { After, AfterAll, BeforeAll, Status } from '@cucumber/cucumber';
 
 import {
   BASE_URL,
@@ -14,16 +14,16 @@ import {
 } from '../environment';
 import { SelectorFactoryInitializer } from '../utils/selector-factory';
 import { testControllerHolder } from './test-controller-holder';
-import { TestControllerConfig } from './test-controller-config';
+import { testControllerConfig } from './test-controller-config';
 import {
   addMetadata,
   createTestFailFile,
   createTestFile,
-  fetchAndAddVersionsToMetadata,
   generateHtmlReport,
   generateJunitReport,
   isLiveModeOn
 } from './helper';
+import logger from '../utils/logger';
 
 // tslint:disable-next-line
 const createTestCafe: TestCafeFactory = require('testcafe');
@@ -62,15 +62,16 @@ function createServerAndRunTests(): void {
         });
       }
 
-      return runner.run({ quarantineMode: true }).catch((error: any) => console.error('Caught error: ', error));
+      return runner.run({ quarantineMode: true }).catch((error: any) => logger.error('Caught error: ', error));
     })
     .then(() => {
       if (state.failedScenarios > 0) {
-        console.warn(`🔥🔥🔥 ${state.failedScenarios} scenarios (retry included) failed 🔥🔥🔥`);
+        logger.warn(`🔥🔥🔥 ${state.failedScenarios} scenarios (retry included) failed 🔥🔥🔥`);
       } else {
-        console.log(`All tests passed 😊`);
+        logger.info('All tests passed 😊');
       }
-    });
+    })
+    .catch((error: any) => logger.error('Caught error: ', error));
 }
 
 function createLiveServerAndRunTests(): void {
@@ -81,16 +82,17 @@ function createLiveServerAndRunTests(): void {
 
       liveRunner = liveRunner.src(`./${TEST_FILE}`).browsers(`${BROWSER}${BROWSER_FLAGS}`.trim());
 
-      return liveRunner.run().catch((error: any) => console.error('Caught error: ', error));
+      return liveRunner.run().catch((error: any) => logger.error('Caught error: ', error));
     })
-    .then(() => testCafe.close());
+    .then(() => testCafe.close())
+    .catch((error: any) => logger.error('Caught error: ', error));
 }
 
 /**
  * Runs before all tests are executed.
- *   - collect metadata for the HTML report
- *   - create the dummy test file to capture the {@link TestController}
- *   - create TestCafe and runs the {@link Runner} w.r.t. the set environment variables (config)
+ * - collect metadata for the HTML report
+ * - create the dummy test file to capture the {@link TestController}
+ * - create TestCafe and runs the {@link Runner} w.r.t. the set environment variables (config)
  */
 BeforeAll((callback: any) => {
   process.env.E2E_META_BROWSER = '';
@@ -101,25 +103,26 @@ BeforeAll((callback: any) => {
 
   state.startTime = new Date().getTime();
 
-  testControllerHolder.register(new TestControllerConfig());
+  testControllerHolder.register(testControllerConfig);
   SelectorFactoryInitializer.init();
 
   createTestFile(TEST_FILE);
+
   if (isLiveModeOn()) {
     createLiveServerAndRunTests();
   } else {
     createServerAndRunTests();
   }
 
-  setTimeout(callback, DELAY);
+  setTimeout(() => callback(), DELAY);
 });
 
 /**
  * AfterEach (scenario):
- *   - add metadata regarding the environment (browser + OS)
- *   - take screenshot if the test case (scenario) has failed
+ * - add metadata regarding the environment (browser + OS)
+ * - take screenshot if the test case (scenario) has failed
  */
-After(async function (testCase) {
+After(async function (this: any, testCase: any) {
   if (isLiveModeOn()) {
     return;
   }
@@ -139,15 +142,15 @@ After(async function (testCase) {
 /**
  * Runs after all tests got executed.
  * Hook-Order:
- *   0. Hook: BeforeAll
- *     - execute dummy test ('fixture') and capture TestController
- *   1. Execute feature 1 -> feature n (Hook: After)
- *   2. Hook: After All
- *     - add metadata (start, stop and duration)
- *     - cleanup (destroy TestController, delete dummy test file)
- *     - generate reports (JSON, HTML and JUNIT)
- *     - create file to indicate that tests failed (for CI/CD) if test failed
- *     - shutdown TestCafe
+ * 0. Hook: BeforeAll
+ * - execute dummy test ('fixture') and capture TestController
+ * 1. Execute feature 1 -> feature n (Hook: After)
+ * 2. Hook: After All
+ * - add metadata (start, stop and duration)
+ * - cleanup (destroy TestController, delete dummy test file)
+ * - generate reports (JSON, HTML and JUNIT)
+ * - create file to indicate that tests failed (for CI/CD) if test failed
+ * - shutdown TestCafe
  */
 AfterAll((callback: any) => {
   if (isLiveModeOn()) {
@@ -165,15 +168,17 @@ AfterAll((callback: any) => {
 
   unlinkSync(TEST_FILE);
 
-  setTimeout(callback, DELAY);
-  setTimeout(async () => {
+  setTimeout(() => callback(), DELAY);
+  setTimeout(() => {
     generateHtmlReport();
     generateJunitReport();
 
     if (state.failedScenarios > 0 && TEST_FAIL_FILE) {
       createTestFailFile();
     }
-    console.log('Shutting down TestCafe...');
-    await testCafe.close();
+    logger.info('Shutting down TestCafe...');
+    testCafe.close()
+      .then(() => logger.info('Finished'))
+      .catch((error: any) => logger.error('Caught error: ', error));
   }, DELAY * 2);
 });
