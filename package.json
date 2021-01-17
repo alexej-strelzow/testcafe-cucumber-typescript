@@ -11,6 +11,7 @@
     "UNIX:": "################# BELOW ARE THE LINUX & OSX COMMANDS #################",
     "tests": "npx cucumber-js -p cucumber --tags 'not @skip'",
     "tests:publish": "npm run tests -- --publish",
+    "tests:parallel": "npm run tests -- --parallel 2 ; node ./cucumber-html.config && node ./cucumber-junit.config",
     "tests:internal": "wait-on tcp:4200 && npm run tests",
     "tests:wip": "TAGS=@wip npm run tests",
     "######## LIVE MODE ########": "",

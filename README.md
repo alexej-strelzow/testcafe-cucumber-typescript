@@ -39,6 +39,7 @@ This project gives you the following features:
 - take screenshot on fail (+ append to report)
 - TestCafe reporting (json, html)
 - Cucumber reporting (json, html, junit)
+- Run tests in parallel (see `npm run tests:parallel`)
 - Live Mode (re-run tests on code/feature change)
 - WIP Mode (only execute tests tagged with `@wip` - work in progress; best combine with Live Mode)
 - Skip Scenarios or features via `@skip`-tag

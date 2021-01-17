@@ -1,16 +1,19 @@
 const reporter = require('cucumber-html-reporter');
 
-const getMetadata = () =>
-    process.env.E2E_META_BROWSER
-      .substr(1)
-      .split(';')
-      .map(property => {
-          const arr = property.split('=');
-          const obj = {};
-          obj[arr[0]] = arr[1];
-          return obj;
-      })
-      .reduce((acc, cur) => Object.assign(acc, cur));
+const getMetadata = () => {
+    return process.env.E2E_META_BROWSER
+        ? process.env.E2E_META_BROWSER
+            .substr(1)
+            .split(';')
+            .map(property => {
+                const arr = property.split('=');
+                const obj = {};
+                obj[arr[0]] = arr[1];
+                return obj;
+            })
+            .reduce((acc, cur) => Object.assign(acc, cur))
+        : '';
+};
 
 const options = {
     jsonFile: 'reports/cucumber_report.json',
