@@ -1,4 +1,4 @@
-import { unlinkSync } from 'fs';
+import { existsSync, unlinkSync } from 'fs';
 import { After, AfterAll, BeforeAll, Status } from '@cucumber/cucumber';
 
 import {
@@ -106,7 +106,9 @@ BeforeAll((callback: any) => {
   testControllerHolder.register(testControllerConfig);
   SelectorFactoryInitializer.init();
 
-  createTestFile(TEST_FILE);
+  if (!existsSync(TEST_FILE)) {
+    createTestFile(TEST_FILE);
+  }
 
   if (isLiveModeOn()) {
     createLiveServerAndRunTests();
@@ -166,7 +168,9 @@ AfterAll((callback: any) => {
   SelectorFactoryInitializer.destroy();
   testControllerHolder.destroy();
 
-  unlinkSync(TEST_FILE);
+  if (existsSync(TEST_FILE)) {
+    unlinkSync(TEST_FILE);
+  }
 
   setTimeout(() => callback(), DELAY);
   setTimeout(() => {
