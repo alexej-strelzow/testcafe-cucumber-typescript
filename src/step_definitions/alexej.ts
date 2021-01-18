@@ -7,10 +7,10 @@ Given(/^I am on Alexej's homepage$/, async function (this: Ctx) {
   return (await this.getTestController()).navigateTo('https://strelzow.dev');
 });
 
-When(/^I press on "(.*)"$/, async function (this: Ctx, text: string) {
+When(/^I press on "(.*)"$/, async function (this: Ctx) {
   return (await this.getTestController()).click($('a[href="/about"]'));
 });
 
-Then(/^I see a handsome guy$/, async function () {
-  expect(true).to.be.false;
+Then(/^I see a handsome guy$/, function () {
+  expect(true).to.eq(false);
 });

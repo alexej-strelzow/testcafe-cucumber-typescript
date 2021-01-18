@@ -36,6 +36,7 @@ export const DOWNLOAD_DIR = process.env.DOWNLOAD_DIR || DEFAULT_DOWNLOAD_DIR;
  */
 export const GENERATE_CUCUMBER_HTML_REPORT = process.env.GENERATE_HTML_REPORT !== 'false'; // by default true
 export const GENERATE_CUCUMBER_JUNIT_REPORT = process.env.GENERATE_JUNIT_REPORT !== 'false';
+export const METADATA_FILE = process.env.METADATA_FILE || `${DEFAULT_CWD}/reports/metadata.json`;
 export const TEST_FAIL_FILE = process.env.TEST_FAIL_FILE || '';
 
 export const RECORD_VIDEO = process.env.RECORD_VIDEO === 'true'; // by default false

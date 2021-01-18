@@ -16,12 +16,12 @@ import { SelectorFactoryInitializer } from '../utils/selector-factory';
 import { testControllerHolder } from './test-controller-holder';
 import { testControllerConfig } from './test-controller-config';
 import {
-  addMetadata,
+  addMetadata, createMetadataFile,
   createTestFailFile,
   createTestFile,
   generateHtmlReport,
   generateJunitReport,
-  isLiveModeOn
+  isLiveModeOn, removeMetadataFile
 } from './helper';
 import logger from '../utils/logger';
 
@@ -95,7 +95,8 @@ function createLiveServerAndRunTests(): void {
  * - create TestCafe and runs the {@link Runner} w.r.t. the set environment variables (config)
  */
 BeforeAll((callback: any) => {
-  process.env.E2E_META_BROWSER = '';
+  createMetadataFile();
+
   addMetadata('Base URL', BASE_URL);
   addMetadata('Locale', LOCALE);
   // tslint:disable-next-line:no-commented-code
@@ -172,14 +173,22 @@ AfterAll((callback: any) => {
     unlinkSync(TEST_FILE);
   }
 
+  if (state.failedScenarios > 0 && TEST_FAIL_FILE) {
+    createTestFailFile();
+  }
+
+  if (existsSync(TEST_FILE)) {
+    unlinkSync(TEST_FILE);
+  }
+
   setTimeout(() => callback(), DELAY);
   setTimeout(() => {
     generateHtmlReport();
     generateJunitReport();
 
-    if (state.failedScenarios > 0 && TEST_FAIL_FILE) {
-      createTestFailFile();
-    }
+    removeMetadataFile();
+
+    // TODO: delete metadata.json or so
     logger.info('Shutting down TestCafe...');
     testCafe.close()
       .then(() => logger.info('Finished'))

@@ -1,18 +1,9 @@
 const reporter = require('cucumber-html-reporter');
+const fs = require('fs');
 
 const getMetadata = () => {
-    return process.env.E2E_META_BROWSER
-        ? process.env.E2E_META_BROWSER
-            .substr(1)
-            .split(';')
-            .map(property => {
-                const arr = property.split('=');
-                const obj = {};
-                obj[arr[0]] = arr[1];
-                return obj;
-            })
-            .reduce((acc, cur) => Object.assign(acc, cur))
-        : '';
+    let rawData = fs.readFileSync('reports/metadata.json', 'utf-8');
+    return JSON.parse(rawData);
 };
 
 const options = {

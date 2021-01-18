@@ -1,6 +1,12 @@
-import { BASE_URL, GENERATE_CUCUMBER_HTML_REPORT, GENERATE_CUCUMBER_JUNIT_REPORT, TEST_FAIL_FILE } from '../environment';
-import { exec } from 'child_process';
-import { writeFileSync } from 'fs';
+import {
+  BASE_URL,
+  GENERATE_CUCUMBER_HTML_REPORT,
+  GENERATE_CUCUMBER_JUNIT_REPORT,
+  METADATA_FILE,
+  TEST_FAIL_FILE
+} from '../environment';
+import { execSync } from 'child_process';
+import { existsSync, readFileSync, unlinkSync, writeFileSync } from 'fs';
 import fetch from 'node-fetch';
 import logger from '../utils/logger';
 
@@ -27,7 +33,12 @@ export const createTestFile = (name: string): void => {
  * @param key The key
  * @param value The value
  */
-export const addMetadata = (key: string, value: string): string => (process.env.E2E_META_BROWSER += `;${key}=${value}`);
+export const addMetadata = (key: string, value: string): void => {
+  const rawData = readFileSync(METADATA_FILE, 'utf-8');
+  const json = JSON.parse(rawData);
+  json[key] = value;
+  writeFileSync('reports/metadata.json', JSON.stringify(json));
+};
 
 /**
  * Fetch relevant application versions and store as metadata.
@@ -48,7 +59,7 @@ export const generateHtmlReport = (): void => {
   if (GENERATE_CUCUMBER_HTML_REPORT) {
     try {
       logger.info('Generating HTML report...');
-      exec(`node ${process.cwd()}/cucumber-html.config.js`);
+      execSync(`node ${process.cwd()}/cucumber-html.config.js`);
     } catch (error) {
       logger.error('Could not generate cucumber html report', error);
     }
@@ -62,7 +73,7 @@ export const generateJunitReport = (): void => {
   if (GENERATE_CUCUMBER_JUNIT_REPORT) {
     try {
       logger.info('Generating JUNIT report...');
-      exec(`node ${process.cwd()}/cucumber-junit.config.js`);
+      execSync(`node ${process.cwd()}/cucumber-junit.config.js`);
     } catch (error) {
       logger.error('Could not generate cucumber junit report', error);
     }
@@ -76,4 +87,25 @@ export const generateJunitReport = (): void => {
 export const createTestFailFile = (): void => {
   logger.info('Writing test-fail file...');
   writeFileSync(`reports/${TEST_FAIL_FILE}`, '');
+};
+
+/**
+ * Creates the temporary shared metadata file.
+ * Its content gets displayed in the HTML report.
+ */
+export const createMetadataFile = (): void => {
+  if (!existsSync(METADATA_FILE)) {
+    logger.info('Writing metadata file...');
+    writeFileSync(METADATA_FILE, '{}');
+  }
+};
+
+/**
+ * Deletes the temporary shared metadata file.
+ */
+export const removeMetadataFile = (): void => {
+  if (existsSync(METADATA_FILE)) {
+    logger.info('Removing metadata file...');
+    unlinkSync(METADATA_FILE);
+  }
 };
