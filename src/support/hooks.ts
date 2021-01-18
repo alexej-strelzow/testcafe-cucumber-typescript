@@ -16,12 +16,14 @@ import { SelectorFactoryInitializer } from '../utils/selector-factory';
 import { testControllerHolder } from './test-controller-holder';
 import { testControllerConfig } from './test-controller-config';
 import {
-  addMetadata, createMetadataFile,
+  addMetadata,
+  createMetadataFile,
   createTestFailFile,
   createTestFile,
   generateHtmlReport,
   generateJunitReport,
-  isLiveModeOn, removeMetadataFile
+  isLiveModeOn,
+  removeMetadataFile
 } from './helper';
 import logger from '../utils/logger';
 
@@ -188,9 +190,9 @@ AfterAll((callback: any) => {
 
     removeMetadataFile();
 
-    // TODO: delete metadata.json or so
     logger.info('Shutting down TestCafe...');
-    testCafe.close()
+    testCafe
+      .close()
       .then(() => logger.info('Finished'))
       .catch((error: any) => logger.error('Caught error: ', error));
   }, DELAY * 2);
