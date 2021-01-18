@@ -1,10 +1,4 @@
-import {
-  BASE_URL,
-  GENERATE_CUCUMBER_HTML_REPORT,
-  GENERATE_CUCUMBER_JUNIT_REPORT,
-  METADATA_FILE,
-  TEST_FAIL_FILE
-} from '../environment';
+import { BASE_URL, GENERATE_CUCUMBER_HTML_REPORT, GENERATE_CUCUMBER_JUNIT_REPORT, METADATA_FILE, TEST_FAIL_FILE } from '../environment';
 import { execSync } from 'child_process';
 import { existsSync, readFileSync, unlinkSync, writeFileSync } from 'fs';
 import fetch from 'node-fetch';

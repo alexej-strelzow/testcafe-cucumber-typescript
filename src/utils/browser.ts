@@ -1,10 +1,8 @@
 import { ClientFunction } from 'testcafe';
 
-export const goBack = (t: TestController): Promise<void> =>
-  ClientFunction(() => window.history.back()).with({ boundTestRun: t })();
+export const goBack = (t: TestController): Promise<void> => ClientFunction(() => window.history.back()).with({ boundTestRun: t })();
 
-export const getLocation = (t: TestController): Promise<string> =>
-  ClientFunction(() => window.location.href).with({ boundTestRun: t })();
+export const getLocation = (t: TestController): Promise<string> => ClientFunction(() => window.location.href).with({ boundTestRun: t })();
 
 export const localStorageSet = (t: TestController, key: string, val: string): Promise<void> =>
   ClientFunction((k, v) => localStorage.setItem(k, v)).with({ boundTestRun: t })(key, val);
