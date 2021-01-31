@@ -5,6 +5,7 @@
 // common options also apply to live-mode
 const common = [
   'src/features',
+  '--format @serenity-js/cucumber',
   '--require-module ts-node/register',
   '--require src/**/*.ts'
 ];

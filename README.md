@@ -20,10 +20,19 @@ After the test has finished you will see the following content inside the report
 ***Note***:
 The `out` directory contains screenshots, as *.png files, of the page where the error occurred
 
-Click [here](http://cucumber-report.surge.sh/cucumber_report.html) to view the HTML Report.
+Click [here](http://cucumber-report.surge.sh/cucumber_report.html) to view the HTML Report with screenshots of failed tests.
+And [here](http://serenity-report.surge.sh/) to view the Serenity HTML Report. Unfortunately this report does not
+contain screenshots of failed tests as there is no TestCafe integration (only Protractor).
 
 If you want to publish your report via cucumber-js you can run: `npm run tests:publish`
 and visit the URL that gets printed out after all test finished.
+
+### Serenity
+
+There is no better report than the Serenity BDD Test Report. To generate the HTML report after a test run
+make sure to have the `serenity-bdd cli` installed (install via `npm run serenity:install`).
+Then simply run `npm run serenity:report` to convert the serenity JSON reports (see `reports/serenity/json`)
+to html (see `reports/serenity/html`).
 
 ### CI/CD
 

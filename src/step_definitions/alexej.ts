@@ -7,7 +7,7 @@ Given(/^I am on Alexej's homepage$/, async function (this: Ctx) {
   return (await this.getTestController()).navigateTo('https://strelzow.dev');
 });
 
-When(/^I press on "(.*)"$/, async function (this: Ctx) {
+When(/^I press on "About Me"$/, async function (this: Ctx) {
   return (await this.getTestController()).click($('a[href="/about"]'));
 });
 

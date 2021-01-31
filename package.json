@@ -8,6 +8,8 @@
     "url": "git@github.com:alexej-strelzow/testcafe-cucumber-typescript.git"
   },
   "scripts": {
+    "serenity:install": "npx serenity-bdd update",
+    "serenity:report": "npx serenity-bdd run --source ./reports/serenity/json --destination ./reports/serenity/html",
     "UNIX:": "################# BELOW ARE THE LINUX & OSX COMMANDS #################",
     "tests": "npx cucumber-js -p cucumber --tags 'not @skip'",
     "tests:publish": "npm run tests -- --publish",
@@ -55,6 +57,9 @@
     "@commitlint/config-conventional": "~11.0.0",
     "@commitlint/parse": "~11.0.0",
     "@cucumber/cucumber": "~7.0.0",
+    "@serenity-js/core": "^2.22.0",
+    "@serenity-js/cucumber": "^2.22.0",
+    "@serenity-js/serenity-bdd": "^2.22.0",
     "@types/chai": "~4.2.14",
     "@types/chai-string": "~1.4.2",
     "@types/node": "~14.14.21",
