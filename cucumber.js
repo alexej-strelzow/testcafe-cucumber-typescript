@@ -5,13 +5,13 @@
 // common options also apply to live-mode
 const common = [
   'src/features',
-  '--format @serenity-js/cucumber',
   '--require-module ts-node/register',
   '--require src/**/*.ts'
 ];
 
 if (process.env.LIVE_MODE !== 'on') {
   common.push('--format json:./reports/cucumber_report.json');
+  common.push('--format @serenity-js/cucumber');
   common.push(typeof process.env.SCENARIO_RETRY === 'undefined' ? '--retry 2' :   '--retry ' + process.env.SCENARIO_RETRY);
 }
 

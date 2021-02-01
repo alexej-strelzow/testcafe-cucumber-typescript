@@ -29,6 +29,11 @@ and visit the URL that gets printed out after all test finished.
 
 ### Serenity
 
+Note: To be able to generate the report you have to have a Java Runtime installed as the serenity bdd cli is a jar file.
+
+Also make sure that your Scenarios and Scenario Outlines have a prover name (string after the ":"),
+as otherwise the report generator will ignore the generated JSON files (empty name and title).
+
 There is no better report than the Serenity BDD Test Report. To generate the HTML report after a test run
 make sure to have the `serenity-bdd cli` installed (install via `npm run serenity:install`).
 Then simply run `npm run serenity:report` to convert the serenity JSON reports (see `reports/serenity/json`)
