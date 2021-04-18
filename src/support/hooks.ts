@@ -1,5 +1,5 @@
 import { existsSync, unlinkSync } from 'fs';
-import { After, AfterAll, BeforeAll, Status } from '@cucumber/cucumber';
+import { Before,After, AfterAll, BeforeAll, Status } from '@cucumber/cucumber';
 
 import {
   BASE_URL,
@@ -91,21 +91,11 @@ function createLiveServerAndRunTests(): void {
 }
 
 /**
- * Runs before all tests are executed.
- * - collect metadata for the HTML report
+ * Runs before each scenario.
  * - create the dummy test file to capture the {@link TestController}
  * - create TestCafe and runs the {@link Runner} w.r.t. the set environment variables (config)
  */
-BeforeAll((callback: any) => {
-  createMetadataFile();
-
-  addMetadata('Base URL', BASE_URL);
-  addMetadata('Locale', LOCALE);
-  // tslint:disable-next-line:no-commented-code
-  // TODO if you want to have the app version in the report fetchAndAddVersionsToMetadata();
-
-  state.startTime = new Date().getTime();
-
+Before(() => {
   testControllerHolder.register(testControllerConfig);
   SelectorFactoryInitializer.init();
 
@@ -118,6 +108,21 @@ BeforeAll((callback: any) => {
   } else {
     createServerAndRunTests();
   }
+});
+
+/**
+ * Runs before all tests are executed.
+ * - collect metadata for the HTML report
+ */
+ BeforeAll((callback: any) => {
+  createMetadataFile();
+
+  addMetadata('Base URL', BASE_URL);
+  addMetadata('Locale', LOCALE);
+  // tslint:disable-next-line:no-commented-code
+  // TODO if you want to have the app version in the report fetchAndAddVersionsToMetadata();
+
+  state.startTime = new Date().getTime();
 
   setTimeout(() => callback(), DELAY);
 });
@@ -126,8 +131,9 @@ BeforeAll((callback: any) => {
  * AfterEach (scenario):
  * - add metadata regarding the environment (browser + OS)
  * - take screenshot if the test case (scenario) has failed
+ * - cleanup (destroy TestController, delete dummy test file)
  */
-After(async function (this: any, testCase: any) {
+ After(async function (this: any, testCase: any) {
   if (isLiveModeOn()) {
     return;
   }
@@ -142,6 +148,13 @@ After(async function (this: any, testCase: any) {
     state.failedScenarios += 1;
     await this.addScreenshotToReport();
   }
+
+  SelectorFactoryInitializer.destroy();
+  testControllerHolder.destroy();
+
+  if (existsSync(TEST_FILE)) {
+    unlinkSync(TEST_FILE);
+  }
 });
 
 /**
@@ -152,7 +165,6 @@ After(async function (this: any, testCase: any) {
  * 1. Execute feature 1 -> feature n (Hook: After)
  * 2. Hook: After All
  * - add metadata (start, stop and duration)
- * - cleanup (destroy TestController, delete dummy test file)
  * - generate reports (JSON, HTML and JUNIT)
  * - create file to indicate that tests failed (for CI/CD) if test failed
  * - shutdown TestCafe
@@ -168,19 +180,8 @@ AfterAll((callback: any) => {
   addMetadata('Start', new Date(state.startTime).toISOString());
   addMetadata('End', new Date(endTime).toISOString());
 
-  SelectorFactoryInitializer.destroy();
-  testControllerHolder.destroy();
-
-  if (existsSync(TEST_FILE)) {
-    unlinkSync(TEST_FILE);
-  }
-
   if (state.failedScenarios > 0 && TEST_FAIL_FILE) {
     createTestFailFile();
-  }
-
-  if (existsSync(TEST_FILE)) {
-    unlinkSync(TEST_FILE);
   }
 
   setTimeout(() => callback(), DELAY);
