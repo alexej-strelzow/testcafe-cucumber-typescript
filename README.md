@@ -1,5 +1,7 @@
 # TestCafe-Cucumber-TypeScript
 
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://paypal.me/AStrelzow)
+
 Welcome to this working example of TestCafe + Cucumber + TypeScript.
 You can take this project as it is and use it to run your End-to-End (E2E) Tests.
 
