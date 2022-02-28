@@ -20,18 +20,24 @@ export const createTestFile = (name: string): void => {
 };
 
 /**
- * Add k/v-metadata to the env variable "E2E_META_BROWSER" which will then be display
- * in the metadata section of the final HTML report.
+ * Add k/v-metadata to a file.
+ * Then use the content to populate your final HTML report.
  * For processing see `cucumber-html.config.js`.
  *
  * @param key The key
  * @param value The value
  */
-export const addMetadata = (key: string, value: string): void => {
+export const setMetadata = (key: string, value: string): void => {
   const rawData = readFileSync(METADATA_FILE, 'utf-8');
   const json = JSON.parse(rawData);
   json[key] = value;
   writeFileSync('reports/metadata.json', JSON.stringify(json));
+};
+
+export const getMetadata = (key: string): any => {
+  const rawData = readFileSync(METADATA_FILE, 'utf-8');
+  const json = JSON.parse(rawData);
+  return json[key];
 };
 
 /**
@@ -42,7 +48,7 @@ export const fetchAndAddVersionsToMetadata = (): void => {
   const getVersion = (url: string) => fetch(url, { method: 'GET' }).then(response => responseHandler(response));
 
   getVersion(`${BASE_URL}/version`)
-    .then((res: any) => addMetadata('Some System', res.version))
+    .then((res: any) => setMetadata('Some System', res.version as string))
     .catch((err: any) => logger.error('Caught error: ', err));
 };
 
@@ -103,3 +109,9 @@ export const removeMetadataFile = (): void => {
     unlinkSync(METADATA_FILE);
   }
 };
+
+/**
+ * Returns the app version
+ */
+// TODO: for you to customize (see browser.ts if you have to retrieve it from the client)
+export const getAppVersion = () => '1.0.0';

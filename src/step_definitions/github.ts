@@ -9,14 +9,14 @@ Given(/^I open the GitHub page$/, async function (this: Ctx) {
   return (await this.getTestController()).navigateTo(githubPage.url());
 });
 
-When(/^I am typing my search request "([^"]*)" on GitHub$/, async function (this: Ctx, text) {
+When(/^I am typing my search request "([^"]*)" on GitHub$/, async function (this: Ctx, text: string) {
   return (await this.getTestController()).typeText(githubPage.searchButton(), text);
 });
 
-Then(/^I am pressing (.*) key on GitHub$/, async function (this: Ctx, text) {
+Then(/^I am pressing (.*) key on GitHub$/, async function (this: Ctx, text: string) {
   return (await this.getTestController()).pressKey(text);
 });
 
-Then(/^I should see that the first GitHub's result is (.*)$/, async function (text) {
+Then(/^I should see that the first GitHub's result is (.*)$/, async function (text: string) {
   expect(await githubPage.firstSearchResult().textContent).to.contain(text);
 });

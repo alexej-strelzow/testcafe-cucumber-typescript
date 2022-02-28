@@ -17,6 +17,7 @@ For Linux/OSx run `npm run tests` and for Windows run `npm run tests:win`.
 After the test has finished you will see the following content inside the reports folder:
 - `cucumber_reports.html`: HTML report with all the info + screenshots
 - `cucumber_report.json`: JSON report with embedded screenshots in base64
+- `cucumber_report.pdf`: PDF report with tabular visualization of test run
 - `cucumber_report.xml`: XML report with basic content
 
 ***Note***:
@@ -31,7 +32,9 @@ and visit the URL that gets printed out after all test finished.
 
 ### Serenity
 
-Note: To be able to generate the report you have to have a Java Runtime installed as the serenity bdd cli is a jar file.
+***Warning***: Does not support parallel test execution! In this case you have to rely on the conventional HTML or PDF report.
+
+*Note*: To be able to generate the report you have to have a Java Runtime installed as the serenity bdd cli is a jar file.
 
 Also make sure that your Scenarios and Scenario Outlines have a prover name (string after the ":"),
 as otherwise the report generator will ignore the generated JSON files (empty name and title).
@@ -49,22 +52,26 @@ Check out the provided `Dockerfile` and `e2e-testing.sh`-script.
 
 This project gives you the following features:
 - specify tests with Gherkin Syntax (if using IntelliJ or WebStorm, please install the CucumberJs Plugin!)
-- run tests with Cucumber
-- write tests with TypeScript and TestCafe
-- written tests work with TestCafe and Cucumber (own lean selector $)
+- write test steps with TypeScript and TestCafe
+- run tests with CucumberJs
+- written tests work with TestCafe and CucumberJs (own lean selector $)
 - take screenshot on fail (+ append to report)
-- TestCafe reporting (json, html)
-- Cucumber reporting (json, html, junit)
+- Rich reporting:
+  - Cucumber reporting (JSON, HTML, junit)
+  - Custom  reporting (PDF)
+  - SerenityJS reporting (HTML)
 - Run tests in parallel (see `npm run tests:parallel`)
 - Live Mode (re-run tests on code/feature change)
-- WIP Mode (only execute tests tagged with `@wip` - work in progress; best combine with Live Mode)
+- Multiple environments/configs supported:
+  - NODE_ENV=xxx in front of run-script (`package.json`) 
 - Skip Scenarios or features via `@skip`-tag
 - Publish Report to `https://reports.cucumber.io/` via `publish`-switch (new since V7)
+- Slack Hook ready (see `scripts/slack-hook`)
 
 When writing tests with Cucumber I chose to use chai as the assertion library.
 In that case failing scenarios will not affect following scenarios (in contrary to the TestCafe assertions).
 
-On top you get a nice dev experience with:
+On top of all of that you get a nice dev experience with:
 - prettier
 - eslint
 - commit hooks
@@ -75,12 +82,12 @@ I hope you enjoy this project.
 
 Tests are described in feature files (see `./src/features`).
 Each written line under "Scenario" must start with either `GIVEN`, `WHEN`, `THEN` or `AND` and has an underlying implementation (see `./src/step_definitions`).
-Each line gets matched to the respective function via regex. Therefore it is important to not have two function with the same text, 
+Each line gets matched to the respective function via regex. Therefor, it is important to not have two functions with the same text, 
 as this is ambiguous and will result in an error.
 
 ### Work in Progress (WIP)
 
-When you are developing a test, just tag the scenario or feature with `@wip` and execute `npm run tests:wip`.
+When you are developing a test, just tag the scenario or feature with `@wip` and comment in `TAGS=@wip` in your config file.
 This command will collect all features or scenarios with that tag and run them.
 Example:
 ```
@@ -100,8 +107,7 @@ Feature: Searching for TestCafe by Google
 ### Work in Live Mode
 
 During development you might not want to always restart the test you are working on.
-You can run tests in live-mode with the following command: `npm run tests:live` or,
-even better, `npm run tests:live:wip` to only run scenarios tagged with `@wip`.
+You can enable live mode in your config via `LIVE_MODE=on` and combine that with `TAGS=@wip` to work on a single scenario.
 
 ***Note***: 
 No report will be generated in live mode and no retry is going to get executed as well!
@@ -113,6 +119,18 @@ Always use `async function` because then you will always be in the scope of our 
 have function at your hand like `getTetsController()` to obtain an instance of TestCafes' `TestController`.
 
 In this way every step is autonomous and does not rely on any state set up in the `GIVEN` function.
+
+### FYI
+
+#### Why node-fetch v2 is used
+
+Because v2 works with commonjs, but v3 not. (See `tsconfig.json`).
+If you install v3 you will get this error:
+
+```
+Error [ERR_REQUIRE_ESM]: Must use import to load ES Module: .../node_modules/node-fetch/src/index.js
+require() of ES modules is not supported.
+```
 
 ## Feedback
 

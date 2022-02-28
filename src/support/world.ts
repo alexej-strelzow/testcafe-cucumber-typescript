@@ -1,4 +1,4 @@
-import { base64Sync } from 'base64-img';
+import { encode } from 'node-base64-image';
 import { testControllerHolder } from './test-controller-holder';
 import { IWorldOptions, setDefaultTimeout, setWorldConstructor } from '@cucumber/cucumber';
 import * as chai from 'chai';
@@ -34,7 +34,9 @@ function CustomWorld(this: IWorldOptions & Ctx, { attach }) {
    * "embeddings": [{ "data": "base64 encoded image", "mime_type": "image/png" }]
    */
   this.addScreenshotToReport = async function () {
-    await (await this.getTestController())
+    await (
+      await this.getTestController()
+    )
       .takeScreenshot()
       .then(this.attachScreenshotToReport)
       .catch(async error => {
@@ -52,10 +54,10 @@ function CustomWorld(this: IWorldOptions & Ctx, { attach }) {
    *
    * @param pathToScreenshot The path under which the screenshot has been saved
    */
-  this.attachScreenshotToReport = (pathToScreenshot: string) => {
-    const imgInBase64: string = base64Sync(pathToScreenshot);
-    const imageConvertForCuc = imgInBase64.substring(imgInBase64.indexOf(',') + 1);
-    return attach(imageConvertForCuc, 'image/png');
+  this.attachScreenshotToReport = async (pathToScreenshot: string) => {
+    // eslint-disable-next-line id-blacklist
+    const imgInBase64 = await encode(pathToScreenshot, { local: true, string: true });
+    return attach(imgInBase64, 'image/png');
   };
 
   /**

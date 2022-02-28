@@ -1,6 +1,7 @@
 import { existsSync, unlinkSync } from 'fs';
 import { After, AfterAll, BeforeAll, Status } from '@cucumber/cucumber';
 
+const generatePDFReport = require('../../scripts/pdf-report');
 import {
   BASE_URL,
   BROWSER,
@@ -13,19 +14,20 @@ import {
   VIDEO_DIR
 } from '../environment';
 import { SelectorFactoryInitializer } from '../utils/selector-factory';
+import logger from '../utils/logger';
 import { testControllerHolder } from './test-controller-holder';
 import { testControllerConfig } from './test-controller-config';
 import {
-  addMetadata,
+  setMetadata,
   createMetadataFile,
   createTestFailFile,
   createTestFile,
   generateHtmlReport,
   generateJunitReport,
+  getAppVersion,
   isLiveModeOn,
   removeMetadataFile
 } from './helper';
-import logger from '../utils/logger';
 
 // tslint:disable-next-line
 const createTestCafe: TestCafeFactory = require('testcafe');
@@ -99,8 +101,8 @@ function createLiveServerAndRunTests(): void {
 BeforeAll((callback: any) => {
   createMetadataFile();
 
-  addMetadata('Base URL', BASE_URL);
-  addMetadata('Locale', LOCALE);
+  setMetadata('Base URL', BASE_URL);
+  setMetadata('Locale', LOCALE);
   // tslint:disable-next-line:no-commented-code
   // TODO if you want to have the app version in the report fetchAndAddVersionsToMetadata();
 
@@ -134,8 +136,8 @@ After(async function (this: any, testCase: any) {
 
   if (!state.browserMedadataAdded) {
     state.browserMedadataAdded = true;
-    addMetadata('Environment', (await this.getTestController()).browser.prettyUserAgent);
-    addMetadata('Browser Flags', BROWSER_FLAGS);
+    setMetadata('Environment', (await this.getTestController()).browser.prettyUserAgent as string);
+    setMetadata('Browser Flags', BROWSER_FLAGS);
   }
 
   if (testCase.result.status === Status.FAILED) {
@@ -164,9 +166,9 @@ AfterAll((callback: any) => {
 
   const endTime = new Date().getTime();
   const duration = endTime - state.startTime;
-  addMetadata('Duration', new Date(duration).toISOString().substr(11, 8));
-  addMetadata('Start', new Date(state.startTime).toISOString());
-  addMetadata('End', new Date(endTime).toISOString());
+  setMetadata('Duration', new Date(duration).toISOString().substr(11, 8));
+  setMetadata('Start', new Date(state.startTime).toISOString());
+  setMetadata('End', new Date(endTime).toISOString());
 
   SelectorFactoryInitializer.destroy();
   testControllerHolder.destroy();
@@ -187,6 +189,7 @@ AfterAll((callback: any) => {
   setTimeout(() => {
     generateHtmlReport();
     generateJunitReport();
+    generatePDFReport(getAppVersion());
 
     removeMetadataFile();
 
