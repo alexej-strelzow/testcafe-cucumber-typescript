@@ -10,12 +10,12 @@ Feature: Searching for multiple things on GitHub
     Given I open the GitHub page
     When I am typing my search request "<Search>" on GitHub
     And I am pressing enter key on GitHub
-    Then I should see that the first GitHub's result is DevExpress/testcafe
+    Then I should see that the first GitHub's result is <Result>
     Examples:
-      |Search|
-      |TestCafe|
-      |Cucumber|
-    @wip
+      |Search| Result |
+      |TestCafe| DevExpress/testcafe |
+      |Cucumber| cucumber/cucumber-jvm |
+    #@wip - comment in "TAGS" in .env.development to only run scenarios tagged with "@wip"
     Examples:
-      |Search|
-      |Typescript|
+      |Search| Result |
+      |Typescript| microsoft/TypeScript |

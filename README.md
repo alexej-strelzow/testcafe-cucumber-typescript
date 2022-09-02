@@ -5,8 +5,9 @@
 Welcome to this working example of TestCafe + Cucumber + TypeScript.
 You can take this project as it is and use it to run your End-to-End (E2E) Tests.
 
-For demo purposes, two feature files are included (see `src/features`):
+For demo purposes, three feature files are included (see `src/features`):
  - `alexej.feature`: does NOT pass (configured retry-mechanism will re-run the test twice)
+ - `feature-with-examples.feature`: does pass
  - `github.feature`: does pass 
  
 ## Run the project

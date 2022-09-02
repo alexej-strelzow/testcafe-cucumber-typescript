@@ -88,10 +88,10 @@
     "prettier": "2.5.1",
     "screenshot-desktop": "1.12.7",
     "svg-to-pdfkit": "0.1.8",
-    "testcafe": "1.18.4",
-    "ts-node": "10.5.0",
+    "testcafe": "2.0.0",
+    "ts-node": "10.9.1",
     "tslib": "2.3.1",
-    "typescript": "4.5.5",
+    "typescript": "4.8.2",
     "wait-on": "6.0.1",
     "winston": "3.6.0"
   },
