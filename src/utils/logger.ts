@@ -5,7 +5,7 @@ const { createLogger, format, transports } = winston;
 const { combine, splat, printf } = format;
 
 const myFormat = printf(({ level, message, timestamp, ...metadata }: TransformableInfo): string => {
-  let msg = `${timestamp as string} [${level}] : ${message} `;
+  let msg = `${timestamp as string} [${level}] : ${message as string} `;
   if (metadata && Object.keys(metadata).length !== 0) {
     msg += JSON.stringify(metadata);
   }
