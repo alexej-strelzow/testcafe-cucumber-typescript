@@ -49,7 +49,7 @@ const state = {
  * For more info see {@link https://devexpress.github.io/testcafe/documentation/using-testcafe/programming-interface/testcafe.html}
  */
 function createServerAndRunTests(): void {
-  createTestCafe(TEST_CAFE_HOST)
+  createTestCafe({ hostname: TEST_CAFE_HOST })
     .then((tc: TestCafe) => {
       testCafe = tc;
       let runner: Runner = tc.createRunner();
@@ -79,7 +79,11 @@ function createServerAndRunTests(): void {
 }
 
 function createLiveServerAndRunTests(): void {
-  createTestCafe(TEST_CAFE_HOST, 1337, 1338)
+  createTestCafe({
+    hostname: TEST_CAFE_HOST,
+    port1: 1337,
+    port2: 1338
+  })
     .then((tc: TestCafe) => {
       testCafe = tc;
       let liveRunner: Runner = tc.createLiveModeRunner();
